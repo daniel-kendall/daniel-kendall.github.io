@@ -197,5 +197,46 @@
 
     })();
   </script>
+  <script>
+    const form = document.getElementById("bookingForm");
+    const message = document.getElementById("formMessage");
+    
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      message.textContent = "Sending your booking request...";
+    
+      const payload = {
+        name: form.name.value,
+        email: form.email.value,
+        mobile: form.mobile.value,
+        checkin: form.checkin.value,
+        checkout: form.checkout.value,
+        location: form.location.value
+      };
+    
+      try {
+        const res = await fetch("https://daniel-kendall-github-io.vercel.app/api/klaviyo-booking.js", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+    
+        const data = await res.json();
+    
+        if (!res.ok) {
+          throw new Error(data.error || "Unknown error");
+        }
+    
+        message.style.color = "green";
+        message.textContent = "✅ Booking received! You’ll receive an email confirmation shortly.";
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        message.style.color = "red";
+        message.textContent = "❌ There was an issue submitting your booking.";
+      }
+    });
+    </script>
+    
 </body>
 </html>
