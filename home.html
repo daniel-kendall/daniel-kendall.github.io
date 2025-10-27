@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Southern Haven Hotels — Reservation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="base.css">
+
+</head>
+<body>
+  <main class="container" role="main">
+    <section class="hero" aria-labelledby="hero-heading">
+      <div>
+        <div class="logo">
+          <div class="mark">SH</div>
+          <div>
+            <div style="font-size:13px;color:var(--muted);letter-spacing:1px">ROO ROOMS</div>
+            <div style="font-weight:600;color:var(--accent-deep);font-size:12px">Luxury Hotels & Retreats — Australia</div>
+          </div>
+        </div>
+
+        <h1 id="hero-heading">Arrive in style. Stay in comfort.</h1>
+        <p class="lead">Experience Australia from the comfort of refined spaces — coastal suites, city sanctuaries and remote retreats curated with artful design, native warmth and impeccable service.</p>
+
+        <div class="features" aria-hidden="true">
+          <div class="feature"><strong>Private Beach Access</strong><small>Exclusive coastal locations</small></div>
+          <div class="feature"><strong>Spa & Wellness</strong><small>Indigenous-inspired treatments</small></div>
+          <div class="feature"><strong>Seasonal Dining</strong><small>Local produce & fine wine</small></div>
+        </div>
+      </div>
+
+      <!-- decorative leaf -->
+      <svg class="leaf" width="380" height="380" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g fill="none" stroke="black" stroke-width="1" transform="translate(10,10)">
+          <path d="M10 100 C40 10, 160 10, 190 100 C160 190, 40 190, 10 100 Z" fill="#0b6b4a" opacity="0.9"></path>
+        </g>
+      </svg>
+
+      <footer class="branding">
+        <small>From Sydney to the Red Centre — crafted stays.</small>
+      </footer>
+    </section>
+
+    <aside class="card" aria-labelledby="form-heading">
+      <h2 id="form-heading" style="margin:0 0 8px;font-family:'Playfair Display',serif;color:var(--accent-deep);">Book your stay</h2>
+      <p class="muted" style="margin-top:0;margin-bottom:12px">Luxury rooms · Flexible rates · Complimentary concierge</p>
+
+      <form id="bookingForm" novalidate>
+        <div>
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Alex Morgan" required>
+        </div>
+
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="alex@example.com" required>
+        </div>
+
+        <div>
+          <label for="mobile">Mobile Number</label>
+          <input id="mobile" name="mobile" type="tel" placeholder="+61 4xx xxx xxx" pattern="^\+?61[0-9\s()-]{8,}$" required>
+          <div class="note" id="mobileNote">We'll send a confirmation SMS. Format will be normalised to +61.</div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="checkin">Check In Date</label>
+            <input id="checkin" name="checkin" type="date" required>
+          </div>
+          <div class="col">
+            <label for="checkout">Check Out Date</label>
+            <input id="checkout" name="checkout" type="date" required>
+          </div>
+        </div>
+
+        <div>
+          <label for="location">Location</label>
+          <select id="location" name="location" required>
+            <option value="">Select a location</option>
+            <option>Sydney</option>
+            <option>Melbourne</option>
+            <option>Brisbane</option>
+            <option>Perth</option>
+            <option>Adelaide</option>
+            <option>Hobart</option>
+            <option>Darwin</option>
+            <option>Byron Bay</option>
+            <option>Alice Springs</option>
+            <option>Broome</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn">Check availability</button>
+          <button type="button" class="btn ghost" id="clearBtn">Clear</button>
+        </div>
+
+        <p class="note" id="formMessage" role="status" aria-live="polite" style="margin-top:10px"></p>
+      </form>
+
+    </aside>
+  </main>
+
+  <script>
+    (function(){
+      const form = document.getElementById('bookingForm');
+      const checkin = document.getElementById('checkin');
+      const checkout = document.getElementById('checkout');
+      const mobile = document.getElementById('mobile');
+      const message = document.getElementById('formMessage');
+      const clearBtn = document.getElementById('clearBtn');
+
+      // set min dates (today) using user's browser locale/time
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth()+1).padStart(2,'0');
+      const dd = String(today.getDate()).padStart(2,'0');
+      const iso = `${yyyy}-${mm}-${dd}`;
+      checkin.min = iso;
+      checkout.min = iso;
+
+      // ensure checkout is at least the day after checkin
+      checkin.addEventListener('change', ()=>{
+        if(!checkin.value) return;
+        const inDate = new Date(checkin.value);
+        const minOut = new Date(inDate.getTime() + 24*60*60*1000);
+        const yyyy = minOut.getFullYear(); const mm = String(minOut.getMonth()+1).padStart(2,'0'); const dd = String(minOut.getDate()).padStart(2,'0');
+        checkout.min = `${yyyy}-${mm}-${dd}`;
+        if(checkout.value && checkout.value <= checkin.value){
+          checkout.value = '';
+        }
+      });
+
+      // normalise Australian mobile numbers to +61 format
+      function normaliseMobile(v){
+        if(!v) return '';
+        // remove spaces, parens, dashes
+        let s = v.replace(/[\s()\-\.]/g,'');
+        // if starts with 0 (local), replace with +61
+        if(/^0[23478]/.test(s)){
+          s = '+61' + s.slice(1);
+        }
+        // if starts with 04 (mobile) -> +614...
+        if(/^04/.test(s)){
+          s = '+61' + s.slice(1);
+        }
+        // if starts with 61 but missing +
+        if(/^61/.test(s)) s = '+'+s;
+        return s;
+      }
+
+      mobile.addEventListener('blur', ()=>{
+        mobile.value = normaliseMobile(mobile.value);
+      });
+
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        message.textContent = '';
+
+        // basic HTML5 validation
+        if(!form.checkValidity()){
+          message.textContent = 'Please complete the form correctly.';
+          message.style.color = '#b54f4f';
+          return;
+        }
+
+        // extra date validation
+        if(checkout.value <= checkin.value){
+          message.textContent = 'Check-out must be after check-in.';
+          message.style.color = '#b54f4f';
+          return;
+        }
+
+        // normalise mobile and re-check pattern
+        mobile.value = normaliseMobile(mobile.value);
+        const mobilePattern = new RegExp(mobile.getAttribute('pattern'));
+        if(!mobilePattern.test(mobile.value)){
+          message.textContent = 'Please enter a valid Australian mobile starting with +61 or 04.';
+          message.style.color = '#b54f4f';
+          return;
+        }
+
+        // simulate submission result
+        message.style.color = 'var(--accent-deep)';
+        message.textContent = 'Thanks — we checked availability. A confirmation will be sent to ' + (document.getElementById('email').value) + '.';
+
+        // In a real app: send data to server here (AJAX / fetch)
+      });
+
+      clearBtn.addEventListener('click', ()=>{
+        form.reset();
+        // reset min values
+        checkin.min = iso; checkout.min = iso;
+        message.textContent = '';
+      });
+
+    })();
+  </script>
+</body>
+</html>
