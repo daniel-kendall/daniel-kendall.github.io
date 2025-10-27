@@ -119,7 +119,7 @@
       console.log("Payload being sent:", payload);
   
       try {
-        const res = await fetch("/api/klaviyo-booking", {
+        const res = await fetch("https://daniel-kendall-github-io.vercel.app/api/klaviyo-booking", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
