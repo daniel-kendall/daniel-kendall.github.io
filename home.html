@@ -15,7 +15,7 @@
         <div class="logo">
           <div class="mark">SH</div>
           <div>
-            <div style="font-size:13px;color:var(--muted);letter-spacing:1px">ROO ROOMS</div>
+            <div style="font-size:13px;color:var(--muted);letter-spacing:1px">SOUTHERN HAVEN</div>
             <div style="font-weight:600;color:var(--accent-deep);font-size:12px">Luxury Hotels & Retreats — Australia</div>
           </div>
         </div>
@@ -119,7 +119,7 @@
       console.log("Payload being sent:", payload);
   
       try {
-        const res = await fetch("/api/klaviyo-booking", {
+        const res = await fetch("https://daniel-kendall-github-io.vercel.app/api/klaviyo-booking", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
