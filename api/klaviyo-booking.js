@@ -26,6 +26,8 @@ export default async function handler(req, res) {
     const REVISION = "2025-01-15";
   
     try {
+        console.log("Incoming request body:", req.body); // 👈 Add this
+
       const { name, email, mobile, checkin, checkout, location } = req.body;
   
       // 1️⃣ Create or update profile
@@ -36,10 +38,16 @@ export default async function handler(req, res) {
             email,
             first_name: name,
             phone_number: mobile,
-            properties: { checkin, checkout, location },
+            properties: {
+                checkin_date: checkin,
+                checkout_date: checkout,
+                hotel_location: location,
+              },          
           },
         },
       };
+
+      
   
       const profileRes = await fetch("https://a.klaviyo.com/api/profiles", {
         method: "POST",
